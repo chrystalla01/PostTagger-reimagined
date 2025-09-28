@@ -1,8 +1,8 @@
 from fastapi import FastAPI,Query,HTTPException
-from schemas import CalcPiResponse, CheckProgressResponse
-from tasks import calculate_pi_task
+from .schemas import CalcPiResponse, CheckProgressResponse
+from .tasks import calculate_pi_task
 from celery.result import AsyncResult
-from celery_app import celery_app
+from .celery_app import celery_app
 app = FastAPI(title="Async π Calculator", version="0.0.1")
 
 @app.get("/calculate_pi", response_model=CalcPiResponse)
