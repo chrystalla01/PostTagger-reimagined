@@ -1,7 +1,15 @@
-version: "3.9"
 services:
+  redis:
+    image: redis:7-alpine
+
   api:
     build: .
-    ports:
-      - "8000:8000"
-    restart: unless-stopped
+    ports: ["8000:8000"]
+    depends_on:
+      - redis
+
+  worker:
+    build: .
+    command: celery -A app.celery_app:celery_app worker --loglevel=INFO
+    depends_on:
+      - redis
