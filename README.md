@@ -8,9 +8,22 @@ Currently, the project contains:
 - FastAPI api with two endpoints:
   - `GET /calculate_pi?n=<int>` → `{"task_id": "<uuid>"}`
   - `GET /check_progress?task_id=<uuid>` → `{"state": "PROGRESS|FINISHED", "progress": 0..1, "result": null|string}`
-- Celery worker and Redis broker running in Docker Compose.
+- **Celery worker** that runs the Monte Carlo calculation in the background  
+- **Redis** serving as both the Celery broker and result backend, all managed with **Docker Compose**
 
 
+## Design Choices
+
+**FastAPI**  
+I picked FastAPI because it’s quick to set up and automatically gives me API docs. With only two routes, I didn’t need a heavy framework, and the built-in type hints keep the code easy to follow.
+
+**Redis**  
+I chose Redis for both the Celery broker and the result backend since it runs in Docker, is very fast, and doesn’t require a database schema or extra setup. It let me keep the stack small and simple.
+
+**Monte Carlo**  
+For calculating π, I used a Monte Carlo method because it’s easy to write, can be split into batches to show progress, and is fun to experiment with. The aim wasn’t perfect precision but a clear example of asynchronous work.
+
+I return the result as a string so it always shows exactly *n* decimal places and keeps any trailing zeros without rounding problems.
 ## How it works (Monte Carlo)
 We estimate π by sampling random points in the unit square and counting how many fall inside the quarter circle (x² + y² ≤ 1).  
 The ratio ≈ π/4, so π ≈ 4 × (points_in_circle / total_points). The task runs in batches to report smooth progress (0..1). We format the final value to exactly *n* decimals.
@@ -20,8 +33,7 @@ The ratio ≈ π/4, so π ≈ 4 × (points_in_circle / total_points). The task r
 
  ## Run the application
 ```bash
-git clone <repo-url>
-cd <repo-folder>
+git clone https://github.com/chrystalla01/PostTagger-reimagined.git
 #build and start
 docker compose up --build 
 #verify services
@@ -69,3 +81,4 @@ The service always returns exactly **n decimal places**, so it pads the number w
 Because our Monte Carlo result is a fraction from counting random points, sometimes that fraction ends neatly instead of going on forever.
 When that happens the formatted output just keeps filling the rest of the requested decimal places with zeros.
 ![img.png](img.png)
+
