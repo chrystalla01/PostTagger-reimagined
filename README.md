@@ -20,5 +20,24 @@ The ratio ≈ π/4, so π ≈ 4 × (points_in_circle / total_points). The task r
 
  ## Run the application
 ```bash
-docker compose up --build
+git clone <repo-url>
+cd <repo-folder>
+#build and start
+docker compose up --build 
+#verify services
+docker copose ps
+#should show task registered
+docker compose logs -f worker
 ```
+## Start a job
+curl "http://localhost:8000/calculate_pi?n=20"
+## Poll
+curl "http://localhost:8000/check_progress?task_id=<ID>"
+## Stop
+`docker compose down`
+## Common issues 
+- API 404 on /: expected (no root route). Use /docs, /calculate_pi, /check_progress.
+
+- “unregistered task”: rebuild after clone: `docker compose up -d --build `
+
+- Can’t reach Docker: start Docker Desktop.

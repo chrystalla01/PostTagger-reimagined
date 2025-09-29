@@ -1,4 +1,4 @@
-from fastapi import FastAPI,Query,HTTPException
+from fastapi import FastAPI,Query
 from .schemas import CalcPiResponse, CheckProgressResponse
 from .tasks import calculate_pi_task
 from celery.result import AsyncResult
@@ -17,7 +17,8 @@ def check_progress(task_id: str = Query(...)):
     if result.successful():
         return {"state": "FINISHED", "progress": 1.0, "result": result.get()}
 
-    meta = result.info or {}
-    progress = float(meta.get("progress", 0.0))
-    return {"state": "PROGRESS", "progress": progress, "result": None}
+    if result.state == "PROGRESS" and isinstance(result.info, dict):
+        progress = float(result.info.get("progress", 0.0))
+        return {"state": "PROGRESS", "progress": progress, "result": None}
 
+    return {"state": "PROGRESS", "progress": 0.0, "result": None}
