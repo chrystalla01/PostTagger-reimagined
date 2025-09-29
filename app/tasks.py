@@ -1,7 +1,7 @@
 from .celery_app import celery_app
 from decimal import Decimal, getcontext
 import random
-SAMPLES_PER_BATCH = 100000
+SAMPLES_PER_BATCH = 4999
 
 @celery_app.task(bind=True)
 def calculate_pi_task(self, n: int) -> str:
